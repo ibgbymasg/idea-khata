@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Idea Khata</title>
+<meta name="description" content="Notepad for next plans, new ideas and topics for your games.">
+<meta name="theme-color" content="#f3f6fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1626" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Idea Khata">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Hind:wght@400;500;600&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: a studio "copy notebook" — project shelf on the left (chips on phone), ruled-paper note cards, slide-over editor sheet */
+:root{
+  --paper:#f3f6fb; --sheet:#ffffff; --rule:#d8e2f0; --margin:#e9a0a0;
+  --ink:#1c2b48; --ink-2:#55657f; --ink-3:#8a97ab;
+  --accent:#e8a317; --accent-ink:#4a3100; --blue:#2f5bd3;
+  --line:#dfe6f1; --shadow:0 1px 0 rgba(28,43,72,.06),0 6px 18px -10px rgba(28,43,72,.25);
+  --p-mithai:#9b2335; --p-dabba:#1f8a86; --p-akshar:#4b45b8; --p-ideas:#d38a00; --p-general:#6b7890;
+  --ok:#2e8b57; --warn:#c77700;
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Hind","Segoe UI",system-ui,sans-serif;
+  --f-hand:"Kalam","Comic Sans MS",cursive;
+  --r:12px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f1626; --sheet:#172036; --rule:#24304a; --margin:#7a3a46;
+  --ink:#e6ecf7; --ink-2:#a9b5cb; --ink-3:#71809b;
+  --accent:#f2b53a; --accent-ink:#2a1c00; --blue:#7fa2ff; --line:#26314a;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 20px -12px rgba(0,0,0,.7);
+  --p-mithai:#e2697b; --p-dabba:#4cc3bd; --p-akshar:#958ff0; --p-ideas:#f2b53a; --p-general:#9aa7bd;
+  --ok:#5fc48a; --warn:#f0a63a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1626; --sheet:#172036; --rule:#24304a; --margin:#7a3a46;
+  --ink:#e6ecf7; --ink-2:#a9b5cb; --ink-3:#71809b;
+  --accent:#f2b53a; --accent-ink:#2a1c00; --blue:#7fa2ff; --line:#26314a;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 20px -12px rgba(0,0,0,.7);
+  --p-mithai:#e2697b; --p-dabba:#4cc3bd; --p-akshar:#958ff0; --p-ideas:#f2b53a; --p-general:#9aa7bd;
+  --ok:#5fc48a; --warn:#f0a63a; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlight-color:transparent;overscroll-behavior-y:contain}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100%;
+  padding-left:max(0px,env(safe-area-inset-left,0px));}
+/* ---------- shelf ---------- */
+.shelf{border-right:1px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;gap:18px;position:sticky;top:env(safe-area-inset-top,0px);height:calc(100vh - env(safe-area-inset-top,0px));overflow:auto}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:20px;transform:rotate(-4deg);box-shadow:var(--shadow)}
+.brand h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1}
+.brand small{display:block;font-family:var(--f-hand);color:var(--ink-3);font-size:13px}
+.shelf-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 8px;font-weight:600}
+.proj-list{display:flex;flex-direction:column;gap:2px}
+.proj{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:8px 10px;border-radius:9px;text-align:left;color:var(--ink-2);font-weight:500}
+.proj:hover{background:var(--sheet)}
+.proj[aria-current="true"]{background:var(--sheet);color:var(--ink);box-shadow:var(--shadow)}
+.dot{width:10px;height:10px;border-radius:3px;flex:none;background:var(--c,var(--ink-3))}
+.proj .count{margin-left:auto;font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.add-proj{border:1px dashed var(--line);background:none;border-radius:9px;padding:8px 10px;color:var(--ink-3);text-align:left}
+.add-proj:hover{color:var(--ink);border-color:var(--ink-3)}
+.proj-form{display:flex;gap:6px}
+.proj-form input{flex:1;min-width:0;border:1px solid var(--line);background:var(--sheet);border-radius:8px;padding:6px 8px}
+.proj-form button{border:0;background:var(--ink);color:var(--paper);border-radius:8px;padding:6px 10px}
+.tools{margin-top:auto;display:flex;flex-direction:column;gap:6px}
+.tool{border:1px solid var(--line);background:var(--sheet);border-radius:9px;padding:8px 10px;text-align:left;color:var(--ink-2);font-size:14px}
+.tool:hover{color:var(--ink);border-color:var(--ink-3)}
+.tool[data-act="install"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.tool-note{margin:2px 4px 0;font-size:12px;color:var(--ink-3)}
+.menu-btn{margin-left:auto;font-size:20px;line-height:1}
+.mob-tools{background:var(--sheet);border-radius:var(--r);box-shadow:var(--shadow);padding:12px}
+.mob-tools .tools{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mob-tools .tool{text-align:center;background:var(--paper)}
+.mob-tools .tool[data-act="install"]{grid-column:1/-1;background:var(--accent)}
+.mob-tools .tool-note{grid-column:1/-1;text-align:center}
+.sync{font-size:12px;color:var(--ink-3);padding:0 8px;display:flex;gap:6px;align-items:center}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--ink-3);display:inline-block}
+.sync[data-s="ok"] i{background:var(--ok)} .sync[data-s="warn"] i{background:var(--warn)}
+
+/* ---------- main ---------- */
+main{min-width:0;padding-block:22px 90px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.mob-head{display:none}
+.top{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.top h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:30px;line-height:1.05;text-wrap:balance}
+.top .sub{color:var(--ink-3);font-size:14px;margin:2px 0 0}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:6px 14px;min-width:0;flex:0 1 280px}
+.search input{border:0;background:none;outline:0;min-width:0;flex:1}
+.search svg{flex:none;color:var(--ink-3)}
+
+/* quick capture — the notebook line */
+.capture{background:var(--sheet);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;
+  background-image:linear-gradient(90deg,transparent 46px,var(--margin) 46px,var(--margin) 47px,transparent 47px)}
+.capture-row{display:flex;align-items:center;gap:8px;padding:10px 12px 10px 60px}
+.capture input{flex:1;min-width:0;border:0;outline:0;background:none;font-family:var(--f-hand);font-size:19px;padding:4px 0}
+.capture input::placeholder{color:var(--ink-3)}
+.capture-opts{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px 60px}
+.kind-btn{border:1px solid var(--line);background:none;border-radius:999px;padding:3px 11px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:center}
+.kind-btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn-primary{border:0;background:var(--accent);color:var(--accent-ink);border-radius:9px;padding:8px 16px;font-weight:600;font-family:var(--f-display);font-size:15px}
+.btn-primary:hover{filter:brightness(1.05)}
+.capture select{border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--ink-2);max-width:170px}
+
+.filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--sheet);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--ink-2)}
+.chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);font-weight:600;box-shadow:inset 0 0 0 1px var(--ink)}
+.chip .n{color:var(--ink-3);margin-left:4px;font-variant-numeric:tabular-nums}
+.filters .spacer{flex:1}
+.toggle-done{border:0;background:none;color:var(--ink-3);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+
+.section-h{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:6px 2px -4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;align-items:start}
+
+/* note card: ruled sheet with a project tab */
+.card{position:relative;background:var(--sheet);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px 12px 18px;cursor:pointer;border:0;text-align:left;width:100%;
+  display:flex;flex-direction:column;gap:8px;min-width:0;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 25px,var(--rule) 25px,var(--rule) 26px);background-position:0 46px;background-size:100% 100%;background-clip:padding-box;
+  transition:transform .15s ease,box-shadow .15s ease}
+.card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+.card:hover{transform:translateY(-2px)}
+.card.done{opacity:.62}
+.card.done .c-title{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.c-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);flex-wrap:wrap}
+.c-proj{color:var(--c);font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:color-mix(in srgb,var(--b) 14%,transparent);color:var(--b)}
+.c-title{font-family:var(--f-display);font-weight:700;font-size:18px;line-height:1.25;margin:0;overflow-wrap:anywhere}
+.c-body{font-family:var(--f-hand);color:var(--ink-2);font-size:15.5px;line-height:26px;margin:0;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.c-foot{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3)}
+.c-foot .pin{margin-left:auto;color:var(--accent)}
+.prog{flex:0 0 60px;height:5px;border-radius:9px;background:var(--line);overflow:hidden}
+.prog b{display:block;height:100%;background:var(--ok)}
+
+.empty{background:var(--sheet);border:1px dashed var(--line);border-radius:var(--r);padding:34px 20px;text-align:center;color:var(--ink-3)}
+.empty strong{display:block;font-family:var(--f-display);font-size:20px;color:var(--ink);margin-bottom:4px}
+
+/* ---------- editor sheet ---------- */
+.scrim{position:fixed;inset:0;background:rgba(10,16,30,.38);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.editor{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--sheet);z-index:41;transform:translateX(102%);visibility:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s linear .25s;
+  display:flex;flex-direction:column;box-shadow:-20px 0 40px -20px rgba(0,0,0,.35);
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.editor.on{transform:none;visibility:visible;transition:transform .25s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.ed-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ed-bar .saved{font-size:12px;color:var(--ink-3);margin-right:auto}
+.icon-btn{border:1px solid var(--line);background:none;border-radius:9px;height:36px;min-width:36px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--ink-2);font-size:13px}
+.icon-btn:hover{color:var(--ink);border-color:var(--ink-3)}
+.icon-btn[aria-pressed="true"]{color:var(--accent);border-color:var(--accent)}
+.icon-btn.danger.armed{background:#c62f3a;border-color:#c62f3a;color:#fff}
+.ed-body{flex:1;overflow:auto;padding:16px 20px 30px 64px;display:flex;flex-direction:column;gap:12px;
+  background-image:linear-gradient(90deg,transparent 48px,var(--margin) 48px,var(--margin) 49px,transparent 49px)}
+.ed-fields{display:flex;flex-wrap:wrap;gap:8px}
+.ed-fields label{display:flex;flex-direction:column;gap:2px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.ed-fields select{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:5px 8px;font-size:14px;text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink)}
+#edTitle{border:0;outline:0;background:none;font-family:var(--f-display);font-weight:800;font-size:26px;line-height:1.2;padding:0;width:100%}
+#edBody{border:0;outline:0;background:none;resize:none;width:100%;min-height:340px;font-family:var(--f-hand);font-size:18px;line-height:30px;padding:0;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--rule) 29px,var(--rule) 30px);background-attachment:local}
+.ed-tools{display:flex;gap:6px;flex-wrap:wrap}
+.ed-hint{font-size:12px;color:var(--ink-3)}
+.ed-dates{font-size:12px;color:var(--ink-3)}
+
+.fab{display:none}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;transition:.2s;z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- phone ---------- */
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr);padding-left:0}
+  .shelf{display:none}
+  main{padding-block:14px 100px}
+  .mob-head{display:flex;flex-direction:column;gap:10px}
+  .mob-brand{display:flex;align-items:center;gap:10px}
+  .mob-brand .brand-mark{width:32px;height:32px;font-size:17px}
+  .mob-brand h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:20px}
+  .mob-brand .sync{margin:0 0 0 auto}
+  .proj-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .proj-scroll::-webkit-scrollbar{display:none}
+  .proj-scroll .proj{flex:none;width:auto;background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px}
+  .proj-scroll .proj[aria-current="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+  .proj-scroll .proj .count{margin-left:2px}
+  .top h2{font-size:24px}
+  .search{flex:1 1 100%;margin-left:0}
+  .capture-row,.capture-opts{padding-left:56px}
+  .capture{background-image:linear-gradient(90deg,transparent 42px,var(--margin) 42px,var(--margin) 43px,transparent 43px)}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .ed-body{padding-left:44px;background-image:linear-gradient(90deg,transparent 30px,var(--margin) 30px,var(--margin) 31px,transparent 31px)}
+  .fab{display:grid;place-items:center;position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:18px;border:0;background:var(--accent);color:var(--accent-ink);box-shadow:var(--shadow);z-index:30}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="shelf" aria-label="Projects">
+    <div class="brand"><div class="brand-mark">ख</div><div><h1>Idea Khata</h1><small>plans · ideas · topics</small></div></div>
+    <div class="shelf-label">Projects</div>
+    <nav class="proj-list" id="projList"></nav>
+    <button class="add-proj" id="addProjBtn" type="button">+ New project</button>
+    <form class="proj-form" id="projForm" hidden><input id="projName" maxlength="30" placeholder="Project name" aria-label="Project name"><button type="submit">Add</button></form>
+    <div class="tools">
+      <button class="tool" type="button" data-act="install" hidden>⤓ Install app</button>
+      <button class="tool" type="button" data-act="backup">Backup notes</button>
+      <button class="tool" type="button" data-act="restore">Restore backup</button>
+      <p class="tool-note" data-role="backupNote">Notes are saved on this device.</p>
+    </div>
+  </aside>
+
+  <main>
+    <div class="wrap">
+      <div class="mob-head">
+        <div class="mob-brand"><div class="brand-mark">ख</div><h1>Idea Khata</h1><button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobTools" aria-label="Backup and settings">⋯</button></div>
+        <div class="mob-tools" id="mobTools" hidden><div class="tools">
+      <button class="tool" type="button" data-act="install" hidden>⤓ Install app</button>
+      <button class="tool" type="button" data-act="backup">Backup notes</button>
+      <button class="tool" type="button" data-act="restore">Restore backup</button>
+      <p class="tool-note" data-role="backupNote">Notes are saved on this device.</p>
+    </div></div>
+        <div class="proj-scroll" id="projScroll"></div>
+      </div>
+
+      <div class="top">
+        <div><h2 id="viewTitle">All notes</h2><p class="sub" id="viewSub"></p></div>
+        <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search notes" aria-label="Search notes"></label>
+      </div>
+
+      <form class="capture" id="capture" autocomplete="off">
+        <div class="capture-row">
+          <input id="capTitle" placeholder="Jot the next plan or a new idea…" aria-label="New note">
+          <button class="btn-primary" type="submit">Add</button>
+        </div>
+        <div class="capture-opts">
+          <span id="capKinds" style="display:contents"></span>
+          <select id="capProj" aria-label="Project"></select>
+        </div>
+      </form>
+
+      <div class="filters" id="filters"></div>
+      <div id="list"></div>
+    </div>
+  </main>
+</div>
+
+<button class="fab" id="fab" type="button" aria-label="New note"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+
+<div class="scrim" id="scrim"></div>
+<section class="editor" id="editor" aria-label="Edit note" aria-hidden="true">
+  <div class="ed-bar">
+    <span class="saved" id="edSaved">Saved</span>
+    <button class="icon-btn" id="edPin" type="button" aria-pressed="false" title="Pin to top"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 3l7 7-3 1-4 4 1 5-2 1-4-4-5 5-1-1 5-5-4-4 1-2 5 1 4-4z"/></svg>Pin</button>
+    <button class="icon-btn danger" id="edDel" type="button">Delete</button>
+    <button class="icon-btn" id="edClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="ed-body">
+    <div class="ed-fields">
+      <label>Project<select id="edProj"></select></label>
+      <label>Type<select id="edKind"></select></label>
+      <label>Status<select id="edStatus"><option value="todo">To do</option><option value="doing">Doing</option><option value="done">Done</option></select></label>
+      <label>Priority<select id="edPri"><option value="0">Normal</option><option value="1">High</option></select></label>
+    </div>
+    <input id="edTitle" placeholder="Title" aria-label="Title">
+    <div class="ed-tools">
+      <button class="icon-btn" type="button" id="edCheck">☐ Checklist item</button>
+      <button class="icon-btn" type="button" id="edStamp">Add today's date</button>
+    </div>
+    <textarea id="edBody" placeholder="Write freely. Start a line with [ ] to make a checklist item; tap it later in the card count." aria-label="Note"></textarea>
+    <div class="ed-dates" id="edDates"></div>
+  </div>
+</section>
+<div class="toast" id="toast"></div>
+<input type="file" id="restoreFile" accept="application/json,.json" hidden>
+
+<script>
+const KINDS={plan:{label:"Next plan",ico:"→",c:"var(--blue)"},idea:{label:"New idea",ico:"✦",c:"var(--p-ideas)"},topic:{label:"Topic",ico:"§",c:"var(--p-dabba)"},fix:{label:"Fix / bug",ico:"!",c:"var(--p-mithai)"}};
+const DEFAULT_PROJECTS=[
+  {id:"mithai-box",name:"Mithai Box",c:"--p-mithai"},
+  {id:"dabba-jam",name:"Dabba Jam",c:"--p-dabba"},
+  {id:"akshar-logic",name:"Akshar Logic",c:"--p-akshar"},
+  {id:"new-games",name:"New game ideas",c:"--p-ideas"},
+  {id:"general",name:"General",c:"--p-general"}];
+const EXTRA_COLORS=["#c2185b","#00897b","#5e35b1","#ef6c00","#3949ab","#6d4c41"];
+const LS="ideaKhata.v1";
+
+const S={notes:new Map(),projects:DEFAULT_PROJECTS.slice(),view:"all",kind:"all",q:"",showDone:false,capKind:"idea",open:null,mode:"local"};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const projOf=id=>S.projects.find(p=>p.id===id)||{id,name:id||"General",c:"--p-general"};
+const colorOf=p=>p.c&&p.c.startsWith("--")?`var(${p.c})`:(p.c||"var(--p-general)");
+
+/* ---------- storage: this device ---------- */
+function loadLocal(){try{const raw=localStorage.getItem(LS);if(raw===null)return false;const d=JSON.parse(raw);(d.notes||[]).forEach(n=>S.notes.set(n.id,n));if(Array.isArray(d.projects)&&d.projects.length)S.projects=d.projects;return true;}catch(e){return false;}}
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify({notes:[...S.notes.values()],projects:S.projects}));}catch(e){toast("Couldn't save. Your phone storage may be full.");}}
+function writeNote(){saveLocal();return Promise.resolve();}
+function writeProjects(){saveLocal();}
+
+const SEED=[
+ {id:"seed-dj-upgrade",title:"Dabba Jam upgrade plan, one step at a time",body:"[ ] Visual engine\n[ ] Home page with route map\n[ ] Daily Bonus + Daily Tiffin\n[ ] Lunch Rush mode\n[ ] Boosters, shop and stars\n[ ] Music\n\nRule: super engaging, never boring, always hungry for the next level.",project:"dabba-jam",kind:"plan",status:"doing",pri:1,pinned:true},
+ {id:"seed-ak-newmode",title:"Pick the next new game type inside Akshar Logic",body:"Want 2–3 idea options that kids, learners and general players would love, then choose one.\nMoney: ads, or a one-time purchase to remove ads.",project:"akshar-logic",kind:"plan",status:"todo",pri:1,pinned:false},
+ {id:"seed-ak-ads",title:"A few non-irritating ads in Shabd Setu",body:"Keep them light so the language section stays enjoyable.",project:"akshar-logic",kind:"idea",status:"todo",pri:0,pinned:false},
+ {id:"seed-ak-content",title:"Post-launch content file",body:"Online content.json on GitHub Pages (akshar-content) for new words, decks and events, auto-downloaded by players.\n[ ] Add first update batch",project:"akshar-logic",kind:"topic",status:"todo",pri:0,pinned:false},
+ {id:"seed-mb-publish",title:"Mithai Box publishing (later, from scratch)",body:"Set aside until the game is done:\n[ ] Play Store listing\n[ ] AdMob rewarded ads\n[ ] Privacy policy\n\nApp ID com.mithaibox.game · developer Mithai Box Games",project:"mithai-box",kind:"plan",status:"todo",pri:0,pinned:false},
+ {id:"seed-mb-phases",title:"Mithai Box 5-phase build",body:"[ ] Foundation\n[ ] Game science\n[ ] Juice and UI\n[ ] Logo and brand\n[ ] Player retention",project:"mithai-box",kind:"plan",status:"doing",pri:0,pinned:false}];
+
+/* ---------- backup & restore ---------- */
+function backup(){
+  const data={app:"idea-khata",version:1,exportedAt:new Date().toISOString(),projects:S.projects,notes:[...S.notes.values()]};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const d=new Date(),name=`idea-khata-backup-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
+  const file=new File([blob],name,{type:"application/json"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"Idea Khata backup"}).then(markBackup).catch(err=>{if(err&&err.name!=="AbortError")downloadBlob(blob,name);});
+  }else downloadBlob(blob,name);
+}
+function downloadBlob(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);markBackup();}
+function markBackup(){try{localStorage.setItem(LS+".lastBackup",String(Date.now()));}catch(e){}toast("Backup saved");updateBackupNote();}
+function updateBackupNote(){let t=0;try{t=+localStorage.getItem(LS+".lastBackup")||0;}catch(e){}
+  const txt=t?`Last backup ${ago(t)}. Notes are saved on this device.`:"No backup yet. Notes are saved on this device.";
+  document.querySelectorAll('[data-role="backupNote"]').forEach(el=>el.textContent=txt);}
+$("restoreFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d||!Array.isArray(d.notes))throw 0;
+      let added=0;for(const n of d.notes){if(n&&n.id){if(!S.notes.has(n.id))added++;S.notes.set(n.id,n);}}
+      if(Array.isArray(d.projects))for(const p of d.projects)if(p&&p.id&&!S.projects.some(x=>x.id===p.id))S.projects.push(p);
+      saveLocal();render();toast(`Restored ${d.notes.length} notes (${added} new)`);
+    }catch(err){toast("That file isn't an Idea Khata backup");}};
+  r.readAsText(f);
+});
+
+/* ---------- install ---------- */
+let installEvt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;document.querySelectorAll('[data-act="install"]').forEach(b=>b.hidden=false);});
+window.addEventListener("appinstalled",()=>{installEvt=null;document.querySelectorAll('[data-act="install"]').forEach(b=>b.hidden=true);toast("Idea Khata installed");});
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-act]");if(!t)return;
+  if(t.dataset.act==="backup")backup();
+  else if(t.dataset.act==="restore")$("restoreFile").click();
+  else if(t.dataset.act==="install"&&installEvt){installEvt.prompt();installEvt.userChoice.finally(()=>{installEvt=null;});}
+});
+$("menuBtn").onclick=()=>{const p=$("mobTools"),open=p.hidden;p.hidden=!open;$("menuBtn").setAttribute("aria-expanded",open);if(open)updateBackupNote();};
+
+/* ---------- render ---------- */
+function counts(){const c={all:0};for(const n of S.notes.values()){if(n.status==="done")continue;c.all++;c[n.project]=(c[n.project]||0)+1;}return c;}
+function renderProjects(){
+  const c=counts();
+  const items=[{id:"all",name:"All notes",c:"--ink-2"},...S.projects];
+  const html=items.map(p=>`<button class="proj" type="button" data-p="${esc(p.id)}" aria-current="${S.view===p.id}" style="--c:${colorOf(p)}"><span class="dot"></span><span>${esc(p.name)}</span><span class="count">${c[p.id]||""}</span></button>`).join("");
+  $("projList").innerHTML=html;$("projScroll").innerHTML=html;
+  const opts=S.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+  const cp=$("capProj").value;$("capProj").innerHTML=opts;$("capProj").value=S.view!=="all"?S.view:(cp||"new-games");
+  $("edProj").innerHTML=opts;
+}
+function renderCapKinds(){
+  $("capKinds").innerHTML=Object.entries(KINDS).map(([k,v])=>`<button type="button" class="kind-btn" data-k="${k}" aria-pressed="${S.capKind===k}"><span style="color:${S.capKind===k?"inherit":v.c}">${v.ico}</span>${v.label}</button>`).join("");
+}
+function visible(){
+  const q=S.q.trim().toLowerCase();
+  return [...S.notes.values()].filter(n=>(S.view==="all"||n.project===S.view)&&(S.kind==="all"||n.kind===S.kind)&&(!q||(n.title+" "+n.body).toLowerCase().includes(q)));
+}
+function checklist(body){const l=(body||"").split("\n");let t=0,d=0;for(const x of l){if(/^\s*\[ \]/.test(x))t++;else if(/^\s*\[x\]/i.test(x)){t++;d++;}}return{t,d};}
+function ago(ts){if(!ts)return"";const s=(Date.now()-ts)/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";if(s<86400*7)return Math.floor(s/86400)+"d ago";return new Date(ts).toLocaleDateString(undefined,{day:"numeric",month:"short"});}
+function card(n){
+  const p=projOf(n.project),k=KINDS[n.kind]||KINDS.idea,cl=checklist(n.body);
+  const st=n.status==="doing"?`<span class="badge" style="--b:var(--warn)">Doing</span>`:n.status==="done"?`<span class="badge" style="--b:var(--ok)">Done</span>`:"";
+  const pri=n.pri?`<span class="badge" style="--b:var(--p-mithai)">High</span>`:"";
+  const preview=(n.body||"").replace(/^\s*\[x\]/gim,"☑").replace(/^\s*\[ \]/gm,"☐");
+  return `<button class="card${n.status==="done"?" done":""}" type="button" data-id="${esc(n.id)}" style="--c:${colorOf(p)}">
+    <div class="c-meta">${S.view==="all"?`<span class="c-proj">${esc(p.name)}</span>·`:""}<span class="badge" style="--b:${k.c}">${k.ico} ${k.label}</span>${st}${pri}</div>
+    <h3 class="c-title">${esc(n.title||"Untitled")}</h3>
+    ${preview.trim()?`<p class="c-body">${esc(preview)}</p>`:""}
+    <div class="c-foot">${cl.t?`<span class="prog"><b style="width:${cl.d/cl.t*100}%"></b></span><span>${cl.d}/${cl.t}</span>·`:""}<span>${ago(n.updatedAt)}</span>${n.pinned?`<span class="pin">★ pinned</span>`:""}</div>
+  </button>`;
+}
+function render(){
+  renderProjects();
+  const vp=S.view==="all"?{name:"All notes"}:projOf(S.view);
+  $("viewTitle").textContent=vp.name;
+  const all=visible();
+  const open=all.filter(n=>n.status!=="done"),done=all.filter(n=>n.status==="done");
+  const plans=open.filter(n=>n.kind==="plan").length;
+  $("viewSub").textContent=`${open.length} open${plans?` · ${plans} next plan${plans>1?"s":""}`:""}${done.length?` · ${done.length} done`:""}`;
+  // filters
+  const base=[...S.notes.values()].filter(n=>(S.view==="all"||n.project===S.view)&&n.status!=="done");
+  const kc={};base.forEach(n=>kc[n.kind]=(kc[n.kind]||0)+1);
+  $("filters").innerHTML=`<button class="chip" type="button" data-f="all" aria-pressed="${S.kind==="all"}">Everything<span class="n">${base.length}</span></button>`+
+    Object.entries(KINDS).map(([k,v])=>`<button class="chip" type="button" data-f="${k}" aria-pressed="${S.kind===k}">${v.ico} ${v.label}<span class="n">${kc[k]||0}</span></button>`).join("")+
+    `<span class="spacer"></span>${done.length?`<button class="toggle-done" type="button" id="toggleDone">${S.showDone?"Hide":"Show"} done (${done.length})</button>`:""}`;
+  const sort=(a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||(b.pri||0)-(a.pri||0)||(a.status==="doing"?-1:0)-(b.status==="doing"?-1:0)||(b.updatedAt||0)-(a.updatedAt||0);
+  open.sort(sort);done.sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  let h="";
+  if(!open.length&&!(S.showDone&&done.length)){
+    h=S.q?`<div class="empty"><strong>No notes match “${esc(S.q)}”</strong>Try another word or clear the search.</div>`
+      :`<div class="empty"><strong>Nothing here yet</strong>Type a plan or idea in the line above and press Add. It saves automatically.</div>`;
+  }else{
+    const pinned=open.filter(n=>n.pinned),rest=open.filter(n=>!n.pinned);
+    if(pinned.length)h+=`<div class="section-h">Pinned</div><div class="grid">${pinned.map(card).join("")}</div>`;
+    if(rest.length)h+=`${pinned.length?`<div class="section-h">Everything else</div>`:""}<div class="grid">${rest.map(card).join("")}</div>`;
+  }
+  if(S.showDone&&done.length)h+=`<div class="section-h">Done</div><div class="grid">${done.map(card).join("")}</div>`;
+  $("list").innerHTML=`<div style="display:flex;flex-direction:column;gap:14px">${h}</div>`;
+}
+
+/* ---------- actions ---------- */
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function createNote(title,openAfter){
+  const now=Date.now(),id=uid();
+  const n={id,title:title||"",body:"",project:$("capProj").value||"general",kind:S.capKind,status:"todo",pri:0,pinned:false,createdAt:now,updatedAt:now};
+  S.notes.set(id,n);writeNote(id);render();
+  if(openAfter)openEditor(id);else toast("Added to "+projOf(n.project).name);
+}
+$("capture").addEventListener("submit",e=>{e.preventDefault();const t=$("capTitle").value.trim();if(!t){openNew();return;}createNote(t,false);$("capTitle").value="";});
+function openNew(){createNote("",true);}
+$("fab").onclick=openNew;
+$("capKinds").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(!b)return;S.capKind=b.dataset.k;renderCapKinds();});
+document.addEventListener("click",e=>{
+  const p=e.target.closest(".proj[data-p]");if(p){S.view=p.dataset.p;S.kind="all";render();window.scrollTo({top:0});return;}
+  const f=e.target.closest("[data-f]");if(f){S.kind=f.dataset.f;render();return;}
+  if(e.target.id==="toggleDone"){S.showDone=!S.showDone;render();return;}
+  const c=e.target.closest(".card[data-id]");if(c){openEditor(c.dataset.id);}
+});
+$("q").addEventListener("input",e=>{S.q=e.target.value;render();});
+
+$("addProjBtn").onclick=()=>{$("projForm").hidden=false;$("addProjBtn").hidden=true;$("projName").focus();};
+$("projForm").addEventListener("submit",e=>{e.preventDefault();const name=$("projName").value.trim();if(!name)return;
+  let id=name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||uid();if(S.projects.some(p=>p.id===id))id+="-"+uid().slice(-3);
+  S.projects.push({id,name,c:EXTRA_COLORS[S.projects.length%EXTRA_COLORS.length]});writeProjects();
+  $("projName").value="";$("projForm").hidden=true;$("addProjBtn").hidden=false;S.view=id;render();});
+
+/* ---------- editor ---------- */
+let saveT=null,delArmed=false;
+function openEditor(id){
+  const n=S.notes.get(id);if(!n)return;S.open=id;
+  $("edTitle").value=n.title;$("edBody").value=n.body;$("edProj").value=n.project;$("edKind").value=n.kind;$("edStatus").value=n.status;$("edPri").value=String(n.pri||0);
+  $("edPin").setAttribute("aria-pressed",!!n.pinned);disarm();$("edSaved").textContent="Saved";
+  $("edDates").textContent=`Created ${new Date(n.createdAt).toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"})}`;
+  $("editor").classList.add("on");$("editor").setAttribute("aria-hidden","false");$("scrim").classList.add("on");
+  setTimeout(()=>(n.title?$("edBody"):$("edTitle")).focus(),220);
+}
+function closeEditor(){
+  if(!S.open)return;flush();
+  const n=S.notes.get(S.open);
+  if(n&&!n.title.trim()&&!n.body.trim()){S.notes.delete(S.open);writeNote(S.open);}
+  S.open=null;$("editor").classList.remove("on");$("editor").setAttribute("aria-hidden","true");$("scrim").classList.remove("on");render();
+}
+function patch(fields,immediate){
+  const n=S.notes.get(S.open);if(!n)return;Object.assign(n,fields,{updatedAt:Date.now()});
+  $("edSaved").textContent="Saving…";clearTimeout(saveT);
+  if(immediate)flush();else saveT=setTimeout(flush,700);
+}
+function flush(){clearTimeout(saveT);saveT=null;const id=S.open;if(!id||!S.notes.has(id))return;writeNote(id).then(()=>{if(S.open===id)$("edSaved").textContent="Saved";});}
+$("edTitle").addEventListener("input",e=>patch({title:e.target.value}));
+$("edBody").addEventListener("input",e=>patch({body:e.target.value}));
+for(const [el,key,num] of [["edProj","project"],["edKind","kind"],["edStatus","status"],["edPri","pri",1]])
+  $(el).addEventListener("change",e=>{patch({[key]:num?+e.target.value:e.target.value},true);render();});
+$("edPin").onclick=()=>{const n=S.notes.get(S.open);const v=!n.pinned;$("edPin").setAttribute("aria-pressed",v);patch({pinned:v},true);render();};
+function disarm(){delArmed=false;$("edDel").classList.remove("armed");$("edDel").textContent="Delete";}
+$("edDel").onclick=()=>{if(!delArmed){delArmed=true;$("edDel").classList.add("armed");$("edDel").textContent="Tap again to delete";setTimeout(disarm,3000);return;}
+  const id=S.open;S.notes.delete(id);clearTimeout(saveT);writeNote(id);S.open=null;
+  $("editor").classList.remove("on");$("scrim").classList.remove("on");render();toast("Note deleted");};
+$("edClose").onclick=closeEditor;$("scrim").onclick=closeEditor;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.open)closeEditor();});
+function insertAtLineStart(text){
+  const ta=$("edBody"),v=ta.value,pos=ta.selectionStart??v.length;
+  const before=v.slice(0,pos),after=v.slice(pos);
+  const ins=(before&&!before.endsWith("\n")?"\n":"")+text;
+  ta.value=before+ins+after;const np=(before+ins).length;ta.focus();ta.setSelectionRange(np,np);patch({body:ta.value});
+}
+$("edCheck").onclick=()=>insertAtLineStart("[ ] ");
+$("edStamp").onclick=()=>insertAtLineStart(new Date().toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})+" — ");
+// tick a checklist line by tapping it: Ctrl/⌘ not needed — double-click toggles
+$("edBody").addEventListener("dblclick",e=>{
+  const ta=e.target,v=ta.value,pos=ta.selectionStart;const s=v.lastIndexOf("\n",pos-1)+1;const line=v.slice(s);
+  let nv=null;if(/^\s*\[ \]/.test(line))nv=v.slice(0,s)+line.replace("[ ]","[x]");else if(/^\s*\[x\]/i.test(line))nv=v.slice(0,s)+line.replace(/\[x\]/i,"[ ]");
+  if(nv!==null){ta.value=nv;ta.setSelectionRange(pos,pos);patch({body:nv});}
+});
+$("edKind").innerHTML=Object.entries(KINDS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join("");
+
+let toastT;function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2200);}
+
+/* ---------- boot ---------- */
+if(!loadLocal()){const now=Date.now();SEED.forEach((n,i)=>S.notes.set(n.id,{...n,createdAt:now-i*60000,updatedAt:now-i*60000}));saveLocal();}
+renderCapKinds();render();updateBackupNote();
+document.addEventListener("visibilitychange",()=>{if(document.hidden){if(S.open)flush();saveLocal();}else if(!S.open)render();});
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
