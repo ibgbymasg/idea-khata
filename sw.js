@@ -1,5 +1,5 @@
 /* IBG Notes service worker: works offline after the first visit. Bump CACHE when you update the app files. */
-var CACHE = 'ibg-notes-v1';
+var CACHE = 'ibg-notes-v2';
 var SHELL = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/maskable-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {
